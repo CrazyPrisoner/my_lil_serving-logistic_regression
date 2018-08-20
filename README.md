@@ -113,6 +113,10 @@
 
             # Info about our data we run it from logistic_regression_input, logistic_regression_input.info_data()
             info_data()
+         
+![Parameter_N](https://user-images.githubusercontent.com/37526996/44318401-7eb98e80-a457-11e8-888e-4541da3cfb69.png)
+![Parameter_EGT](https://user-images.githubusercontent.com/37526996/44318404-80835200-a457-11e8-80c3-f26dd36112d6.png)
+![Parameter_WF](https://user-images.githubusercontent.com/37526996/44318407-837e4280-a457-11e8-8ae3-8b87bf49d106.png)
             
 <p> Graphics, we call from logistic_regression_input.py script. </p>
             
@@ -187,8 +191,7 @@
             
 <p> Test model. Predict vizualization. </p>
 
-
-
+![Predicted classes](https://user-images.githubusercontent.com/37526996/44318293-f6d38480-a456-11e8-93bc-af4f03622fad.png)
             
             # Path to save model
             export_path_base = sys.argv[-1]
@@ -254,12 +257,201 @@
 
 <p> If you run successfully, you can see this, in your command </p>
 
-sdsdsd
- 
+            2018-08-20 08:48:34.942003: I tensorflow_serving/model_servers/main.cc:157] Building single TensorFlow model file config:  model_name: deka model_base_path: /home/deka/Desktop/test_tensorflow_serving/log_test_serving_model3/
+            2018-08-20 08:48:34.942212: I tensorflow_serving/model_servers/server_core.cc:462] Adding/updating models.
+            2018-08-20 08:48:34.942234: I tensorflow_serving/model_servers/server_core.cc:517]  (Re-)adding model: deka
+            2018-08-20 08:48:35.043158: I tensorflow_serving/core/basic_manager.cc:739] Successfully reserved resources to load servable {name: deka version: 16}
+            2018-08-20 08:48:35.043258: I tensorflow_serving/core/loader_harness.cc:66] Approving load for servable version {name: deka version: 16}
+            2018-08-20 08:48:35.043304: I tensorflow_serving/core/loader_harness.cc:74] Loading servable version {name: deka version: 16}
+            2018-08-20 08:48:35.043400: I external/org_tensorflow/tensorflow/contrib/session_bundle/bundle_shim.cc:360] Attempting to load native SavedModelBundle in bundle-shim from: /home/deka/Desktop/test_tensorflow_serving/log_test_serving_model3/16
+            2018-08-20 08:48:35.043485: I external/org_tensorflow/tensorflow/cc/saved_model/reader.cc:31] Reading SavedModel from: /home/deka/Desktop/test_tensorflow_serving/log_test_serving_model3/16
+            2018-08-20 08:48:35.045907: I external/org_tensorflow/tensorflow/cc/saved_model/reader.cc:54] Reading meta graph with tags { serve }
+            2018-08-20 08:48:35.072871: I external/org_tensorflow/tensorflow/cc/saved_model/loader.cc:113] Restoring SavedModel bundle.
+            2018-08-20 08:48:35.075987: I external/org_tensorflow/tensorflow/cc/saved_model/loader.cc:148] Running LegacyInitOp on SavedModel bundle.
+            2018-08-20 08:48:35.078524: I external/org_tensorflow/tensorflow/cc/saved_model/loader.cc:233] SavedModel load for tags { serve }; Status: success. Took 35030 microseconds.
+            2018-08-20 08:48:35.078589: I tensorflow_serving/servables/tensorflow/saved_model_warmup.cc:83] No warmup data file found at /home/deka/Desktop/test_tensorflow_serving/log_test_serving_model3/16/assets.extra/tf_serving_warmup_requests
+            2018-08-20 08:48:35.078727: I tensorflow_serving/core/loader_harness.cc:86] Successfully loaded servable version {name: deka version: 16}
+            2018-08-20 08:48:35.080675: I tensorflow_serving/model_servers/main.cc:327] Running ModelServer at 0.0.0.0:6660 ...
+
  
  <p> Test server. </p>
  
+ <p> Run this to test server: deka@grave:~/Desktop/logistic_regression_scripts$ python test_server_ex.py </p>
  
- Run this to test server: deka@grave:~/Desktop/logistic_regression_scripts$ python test_server_ex.py
+        from grpc.beta import implementations
+        import tensorflow as tf
+        import numpy
+        import pandas
+        from logistic_regression_input import *
+
+        from tensorflow.core.framework import types_pb2
+        from tensorflow.python.platform import flags
+        from tensorflow_serving.apis import predict_pb2
+        from tensorflow_serving.apis import prediction_service_pb2
+
+
+        tf.app.flags.DEFINE_string('server', 'localhost:6660',
+                                   'inception_inference service host:port')
+        FLAGS = tf.app.flags.FLAGS
+
+
+        def main(_):
+            x_tr,x_te,y_tr,y_te = input_data()
+            x_test_arr = numpy.float32(x_te)
+            #feed_value2 = numpy.asarray([90.234,1352.642,5978.735])
+            # Prepare request
+            request = predict_pb2.PredictRequest()
+            request.model_spec.name = 'deka'
+            request.inputs['inputs'].dtype = types_pb2.DT_FLOAT
+            #request.inputs['inputs'].float_val.append(feed_value2)
+            request.inputs['inputs'].CopyFrom(
+                tf.contrib.util.make_tensor_proto(x_test_arr))
+            request.output_filter.append('classes')
+            # Send request
+            host, port = FLAGS.server.split(':')
+            channel = implementations.insecure_channel(host, int(port))
+            stub = prediction_service_pb2.beta_create_PredictionService_stub(channel)
+            prediction = stub.Predict(request, 5.0)  # 5 secs timeout
+            predd = numpy.asarray(prediction)
+            floats = prediction.outputs['classes'].int64_val
+            pred_array = numpy.asarray(floats)
+            df = pandas.DataFrame({"predicted_value":pred_array})
+            print(df)
+            df.to_csv('/home/deka/Desktop/prediction_log.csv') # Save prediction as dataset
+
+
+            if __name__ == '__main__':
+                tf.app.run()
+
  
+ <p> Predicted value: </p>
  
+                 predicted_value
+            0                   1
+            1                   1
+            2                   1
+            3                   1
+            4                   1
+            5                   1
+            6                   1
+            7                   0
+            8                   0
+            9                   0
+            10                  0              
+            0                   1
+            1                   1
+            2                   1
+            3                   1
+            4                   1
+            5                   1
+            6                   1
+            7                   0
+            8                   0
+            9                   0
+            10                  0
+            11                  0
+            12                  0
+            13                  0
+            14                  0
+            15                  0
+            16                  0
+            17                  0
+            18                  0
+            19                  0
+            20                  0
+            21                  0
+            22                  0
+            23                  0
+            24                  0
+            25                  0
+            26                  0
+            27                  0
+            28                  0
+            29                  0
+            ...               ...
+            1136                1
+            1137                1
+            1138                1
+            1139                1
+            1140                1
+            1141                1
+            1142                1
+            1143                1
+            1144                1
+            1145                1
+            1146                1
+            1147                1
+            1148                1
+            1149                1
+            1150                1
+            1151                1
+            1152                1
+            1153                1
+            1154                1
+            1155                1
+            1156                1
+            1157                1
+            1158                1
+            1159                1
+            1160                1
+            1161                1
+            1162                1
+            1163                1
+            1164                1
+            1165                1
+
+            [1166 rows x 1 columns]
+
+            11                  0
+            12                  0
+            13                  0
+            14                  0
+            15                  0
+            16                  0
+            17                  0
+            18                  0
+            19                  0
+            20                  0
+            21                  0
+            22                  0
+            23                  0
+            24                  0
+            25                  0
+            26                  0
+            27                  0
+            28                  0
+            29                  0
+            ...               ...
+            1136                1
+            1137                1
+            1138                1
+            1139                1
+            1140                1
+            1141                1
+            1142                1
+            1143                1
+            1144                1
+            1145                1
+            1146                1
+            1147                1
+            1148                1
+            1149                1
+            1150                1
+            1151                1
+            1152                1
+            1153                1
+            1154                1
+            1155                1
+            1156                1
+            1157                1
+            1158                1
+            1159                1
+            1160                1
+            1161                1
+            1162                1
+            1163                1
+            1164                1
+            1165                1
+
+            [1166 rows x 1 columns]
+
