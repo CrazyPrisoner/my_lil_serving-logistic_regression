@@ -82,6 +82,8 @@
  
  <p> Run in like this : python logistic_regression_model.py /home/deka/Desktop/test_tensorflow_serving/log_test_serving_model3/. Need give path to save model. </p>
  
+ [Logistic Regression](https://github.com/aymericdamien/TensorFlow-Examples/blob/master/examples/2_BasicModels/logistic_regression.py)
+ 
          import os
         import sys
         import numpy
@@ -204,6 +206,8 @@
             builder = tf.saved_model.builder.SavedModelBuilder(export_path)
             
 <p> Saving model path, version, name. Saving model builder. </p>
+
+[Save model](https://github.com/tensorflow/serving/blob/master/tensorflow_serving/example/mnist_saved_model.py)
             
             # Build the signature_def_map.
             regression_inputs = tf.saved_model.utils.build_tensor_info(X) # Save first_placeholder to take prediction
