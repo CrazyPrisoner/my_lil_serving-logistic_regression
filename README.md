@@ -188,10 +188,12 @@
             plt.ylabel('Status')
             plt.plot(test_Y,color='blue') # Test line
             plt.show()
-            
-<p> Test model. Predict vizualization. </p>
+           
 
 ![Predicted classes](https://user-images.githubusercontent.com/37526996/44318293-f6d38480-a456-11e8-93bc-af4f03622fad.png)
+ 
+<p> Test model. Predict vizualization. </p>
+            
             
             # Path to save model
             export_path_base = sys.argv[-1]
@@ -401,57 +403,3 @@
             1165                1
 
             [1166 rows x 1 columns]
-
-            11                  0
-            12                  0
-            13                  0
-            14                  0
-            15                  0
-            16                  0
-            17                  0
-            18                  0
-            19                  0
-            20                  0
-            21                  0
-            22                  0
-            23                  0
-            24                  0
-            25                  0
-            26                  0
-            27                  0
-            28                  0
-            29                  0
-            ...               ...
-            1136                1
-            1137                1
-            1138                1
-            1139                1
-            1140                1
-            1141                1
-            1142                1
-            1143                1
-            1144                1
-            1145                1
-            1146                1
-            1147                1
-            1148                1
-            1149                1
-            1150                1
-            1151                1
-            1152                1
-            1153                1
-            1154                1
-            1155                1
-            1156                1
-            1157                1
-            1158                1
-            1159                1
-            1160                1
-            1161                1
-            1162                1
-            1163                1
-            1164                1
-            1165                1
-
-            [1166 rows x 1 columns]
-
